@@ -2,15 +2,15 @@
 from pathlib import Path
 import json
 import numpy as np
-from sklearn.model_selection import GroupShuffleSplit
-from sklearn.preprocessing import StandardScaler
-from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, classification_report
 from vision import dataset, LABELS, FEATURES
 
 ROOT = Path(__file__).parent
 
 def train():
+    from sklearn.model_selection import GroupShuffleSplit
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.neural_network import MLPClassifier
+    from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, classification_report
     x,y,groups = dataset()
     train_idx,test_idx = next(GroupShuffleSplit(n_splits=1,test_size=.2,random_state=42).split(x,y,groups))
     scaler = StandardScaler().fit(x[train_idx])
