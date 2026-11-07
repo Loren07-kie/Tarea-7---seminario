@@ -1,0 +1,136 @@
+{
+  "accuracy": 1.0,
+  "f1_macro": 1.0,
+  "confusion_matrix": [
+    [
+      100,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      100,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      100,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      100,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      100
+    ]
+  ],
+  "classification_report": {
+    "Equilibrada": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 100.0
+    },
+    "Oscura": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 100.0
+    },
+    "Sobreexpuesta": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 100.0
+    },
+    "Bajo contraste": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 100.0
+    },
+    "Desenfocada": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 100.0
+    },
+    "accuracy": 1.0,
+    "macro avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 500.0
+    },
+    "weighted avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 500.0
+    }
+  },
+  "loss": [
+    1.6062193060788597,
+    1.4660385336235553,
+    1.3489364480338908,
+    1.2474467191090068,
+    1.1530883718616607,
+    1.0641733031268288,
+    0.9773465227302212,
+    0.8937610240453859,
+    0.8133392078153902,
+    0.7378659319762287,
+    0.6678297697695139,
+    0.6040411486350286,
+    0.5462627883292636,
+    0.4944208635870969,
+    0.4481992324965783,
+    0.40707066320813645,
+    0.3698628415383904,
+    0.33613901044016214,
+    0.30548582972063193,
+    0.27767102118390163,
+    0.2518826118538387,
+    0.2286129762572027,
+    0.2068310831255789,
+    0.18700927504711118,
+    0.16898366149320695,
+    0.15255916898981411,
+    0.13759509894667826,
+    0.12425104809928461,
+    0.11225136663080977
+  ],
+  "train_samples": 2000,
+  "test_samples": 500,
+  "seed": 42,
+  "features": [
+    "brillo",
+    "contraste",
+    "nitidez",
+    "sombras",
+    "altas luces"
+  ],
+  "architecture": [
+    5,
+    24,
+    12,
+    5
+  ],
+  "dataset": "2500 imágenes sintéticas; 500 escenas; separación por escena",
+  "limitation": "Las métricas describen degradaciones sintéticas, no validación con fotografías reales.",
+  "baseline_accuracy": 0.2
+}

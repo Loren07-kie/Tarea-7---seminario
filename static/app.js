@@ -1,0 +1,20 @@
+let imageFile=null,busy=false;
+const $=s=>document.querySelector(s), labels=['Equilibrada','Oscura','Sobreexpuesta','Bajo contraste','Desenfocada'];
+function message(text){$('#message').textContent=text}
+async function analyze(mode='original'){
+ if(!imageFile||busy)return;busy=true;document.querySelectorAll('.filters button').forEach(b=>b.disabled=true);message('Analizando píxeles y aplicando tu filtro…');
+ try{const body=new FormData();body.append('image',imageFile);body.append('filter',mode);const res=await fetch('/api/analyze',{method:'POST',body});const data=await res.json();if(!res.ok)throw Error(data.error||'No se pudo procesar la imagen.');
+ $('#empty').hidden=true;$('#empty').style.display='none';$('#original').hidden=false;$('#result-layer').hidden=false;$('#result').src=data.image;$('#download').href=data.image;$('#download').classList.remove('disabled');$('#comparison').disabled=false;$('#before-tag').hidden=false;$('#after-tag').hidden=false;
+ const diag=$('#diagnosis');diag.replaceChildren();const h=document.createElement('h4');h.className='result-label';h.textContent=data.label;diag.append(h);const p=document.createElement('p');p.textContent=data.tip;diag.append(p);
+ data.probabilities.forEach((v,i)=>{const row=document.createElement('div');row.className='prob';const name=document.createElement('span');name.textContent=labels[i];const pct=document.createElement('span');pct.textContent=Math.round(v*100)+'%';const bar=document.createElement('progress');bar.max=1;bar.value=v;bar.setAttribute('aria-label',labels[i]);row.append(name,pct,bar);diag.append(row)});
+ document.querySelectorAll('[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter===mode));message('Listo. Mueve el control para comparar. Probabilidades orientativas del modelo sintético.');
+ }catch(e){message(e.message||'No hay conexión. Inténtalo de nuevo.')}finally{busy=false;document.querySelectorAll('.filters button').forEach(b=>b.disabled=false)}
+}
+let originalUrl=null;
+function load(file){if(busy)return;if(!file)return;if(file.size>8*1024*1024){message('La imagen supera 8 MB.');return}imageFile=file;if(originalUrl)URL.revokeObjectURL(originalUrl);originalUrl=URL.createObjectURL(file);$('#original').src=originalUrl;analyze()}
+$('#file').addEventListener('change',e=>load(e.target.files[0]));$('#stage').addEventListener('dragover',e=>e.preventDefault());$('#stage').addEventListener('drop',e=>{e.preventDefault();load(e.dataTransfer.files[0])});
+$('#filters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(b){if(!imageFile)message('Primero sube una foto o prueba el ejemplo.');else analyze(b.dataset.filter)}});
+$('#comparison').addEventListener('input',e=>$('#result-layer').style.clipPath=`inset(0 0 0 ${e.target.value}%)`);
+$('#demo').onclick=()=>{const c=document.createElement('canvas');c.width=900;c.height=650;const ctx=c.getContext('2d'),g=ctx.createLinearGradient(0,0,900,650);g.addColorStop(0,'#120f32');g.addColorStop(.5,'#6b3ca9');g.addColorStop(1,'#f08ca8');ctx.fillStyle=g;ctx.fillRect(0,0,900,650);ctx.fillStyle='#ddfca0';ctx.beginPath();ctx.arc(660,180,95,0,Math.PI*2);ctx.fill();for(let i=0;i<18;i++){ctx.fillStyle=i%2?'#161425':'#29213f';ctx.fillRect(i*55,300+(i*73%130),48,350)}ctx.fillStyle='#c7ff51';ctx.font='bold 105px sans-serif';ctx.fillText('STAY',65,200);ctx.fillStyle='#fff';ctx.fillText('CURIOUS.',65,310);ctx.font='20px sans-serif';ctx.fillText('NEONLENS / IMAGEN DE EJEMPLO SINTÉTICA',65,590);c.toBlob(b=>load(new File([b],'demo.png',{type:'image/png'})))};
+$('#prev').onclick=()=>$('#cards').scrollBy({left:-340,behavior:'smooth'});$('#next').onclick=()=>$('#cards').scrollBy({left:340,behavior:'smooth'});
+fetch('/api/metrics').then(r=>{if(!r.ok)throw Error();return r.json()}).then(m=>$('#metric').textContent=`Exactitud ${(m.accuracy*100).toFixed(1)}% y F1 macro ${m.f1_macro.toFixed(3)} en ${m.test_samples} imágenes de prueba sintéticas. No mide rendimiento en fotos reales.`).catch(()=>$('#metric').textContent='Consulta reports/metrics.json en el repositorio para revisar la evaluación.');
